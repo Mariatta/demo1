@@ -56,7 +56,8 @@ async def repo_installation_added(event, gh, *args, **kwargs):
         app_id=os.environ.get("GH_APP_ID"),
         private_key=os.environ.get("GH_PRIVATE_KEY")
     )
-    url = event.data["repositories"][0]["full_name"]
+    full_name = event.data["repositories"][0]["full_name"]
+    url = f"/repos/{full_name}/issues"
     response = await gh.post(
         url,
         data={
@@ -65,6 +66,7 @@ async def repo_installation_added(event, gh, *args, **kwargs):
         },
         oauth_token=installation_access_token["token"]
     )
+    print(f"Issue created at {response['html_url']}")
 
 
 if __name__ == "__main__":  # pragma: no cover
