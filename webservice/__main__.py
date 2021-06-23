@@ -49,7 +49,22 @@ async def webhook(request):
 @router.register("installation", action="created")
 async def repo_installation_added(event, gh, *args, **kwargs):
     installation_id = event.data["installation"]["id"]
-    pass
+    installation_access_token = await
+    apps.get_installation_access_token(
+        gh,
+        installation_id=installation_id,
+        app_id=os.environ.get("GH_APP_ID"),
+        private_key=os.environ.get("GH_PRIVATE_KEY")
+    )
+    url = event.data["repositories"][0]["full_name"]
+    response = await gh.post(
+        url,
+        data={
+            'title': 'Thanks for installing the app',
+            'body': 'Thanks!',
+        },
+        oauth_token=installation_access_token["token"]
+    )
 
 
 if __name__ == "__main__":  # pragma: no cover
